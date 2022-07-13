@@ -1,6 +1,6 @@
 import random
 from datetime import datetime
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 
 app = Flask(__name__)
@@ -9,8 +9,7 @@ app.debug = True
 
 @app.route("/")
 def index():
-    return "<h3>Index page</h3>" \
-           f"<p>Yurii Kovalenko - DZ 4</p>"
+    return render_template('index.html')
 
 
 @app.route("/whoami")
@@ -21,25 +20,27 @@ def whoami():
     ip_address = request.remote_addr
     # Current time on server
     current = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
-    return "<h3>whoami info</h3>" \
-           f"<p>User Agent: {browser}</p>" \
-           f"<p>Requester IP: {ip_address}</p>" \
-           f"<p>Day and time: {current}</p>"
+    return render_template('whoami.html', browser=browser, ip_address=ip_address, current=current)
 
 
 @app.route("/source_code")
 def source_code():
     with open('app.py') as app_file:
         source_code_text = app_file.read()
-    return F"<p>{source_code_text}</p>"
+    return render_template('source_code.html', source_code_text=source_code_text)
+
+
+@app.route("/randoms", methods=['GET'])
+def randoms_get():
+    return render_template('randoms.html')
 
 
 # 127.0.0.1:5000/randoms?length=42&specials=1&digits=0
-@app.route("/randoms")
+@app.route("/randoms", methods=['POST'])
 def randoms():
-    length = int(request.values.get('length', ''))
-    specials = int(request.values.get('specials', ''))
-    digits = int(request.values.get('digits', ''))
+    length = int(request.form.get('length'))
+    specials = 1 if request.form.get('specials') == 'on' else 0
+    digits = 1 if request.form.get('digits') == 'on' else 0
     res_string = ''
     if (length < 0 or length > 100) or specials not in (0, 1) or digits not in (0, 1):
         if length < 0 or length > 100:
@@ -56,7 +57,7 @@ def randoms():
         if digits:
             chars_list.extend([chr(_) for _ in range(ord('0'), ord('9') + 1)])
         res_string = ''.join(random.choices(chars_list, k=length))
-    return res_string
+    return render_template('randoms.html', res_string=res_string)
 
 
 if __name__ == '__main__':
