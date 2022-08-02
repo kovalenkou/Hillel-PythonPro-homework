@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{% block title %} Yurii Kovalenko - DZ 8 {% endblock %}</h1>
+<h3>Welcome to random string page!</h3>
+<p>Search form</p>
+<form action="/randoms/" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Size for a string</label>
+        <input type="text" class="form-control" name="length" placeholder="Enter an integer">
+        <small id="inputHelp" class="form-text text-muted">Input an integer more than 0 and less then 100.</small>
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="specials">
+        <label class="form-check-label">Do you need special symbols in a string?</label>
+    </div>
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="digits">
+        <label class="form-check-label">Do you need digits in a string?</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+<p></p>
+{% if res_string %}
+<div class="alert alert-success" role="alert">
+  <h4 class="alert-heading">Resulting string</h4>
+  <hr>
+  <p class="mb-0">This is a string: {{ res_string }}.</p>
+</div>
+{% endif %}
+{% endblock %}
